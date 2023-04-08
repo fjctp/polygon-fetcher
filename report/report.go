@@ -77,7 +77,8 @@ func getChart(finData fetcher.FinData, sName string, keys []string) Chart {
 	for i, record := range finData.Data {
 		// get fiscal year for each data point
 		// insert the new data at the start of the slice
-		xdata = append([]string{record.FiscalYear}, xdata...)
+		fiscalLabel := record.FiscalYear + " " + record.FiscalPeriod
+		xdata = append([]string{fiscalLabel}, xdata...)
 
 		// get data for each keys
 		statement := record.Financials[sName]

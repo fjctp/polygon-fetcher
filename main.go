@@ -16,7 +16,7 @@ const max_item_per_req = 100
 const max_num_of_req = 5
 const max_item = max_item_per_req * max_num_of_req
 
-const timeframe = models.TFAnnual
+const timeframe = models.TFQuarterly
 
 func get_fetcher() (*fetcher.Fetcher, error) {
 	key, isFound := os.LookupEnv("POLYGON_API_KEY")
@@ -29,13 +29,19 @@ func get_fetcher() (*fetcher.Fetcher, error) {
 
 func main() {
 	// Define parameters
-	var ticker, out_dir string
+	var ticker, timeframe, out_dir string
 	var write_data bool
 	var num_year int
-	flag.StringVar(&ticker, "ticker", "AAPL", "Get data for ticker")
-	flag.IntVar(&num_year, "num_year", 5, "Get data for the last number of years")
-	flag.BoolVar(&write_data, "write_data", false, "Write data to out_dir in JSON format")
-	flag.StringVar(&out_dir, "out_dir", "data", "Output directory")
+	flag.StringVar(&ticker, "ticker", "AAPL",
+		"Get data for ticker. Default AAPL")
+	flag.IntVar(&num_year, "num_year", 50,
+		"Get data for the last number of years. Default: 50")
+	flag.StringVar(&timeframe, "timeframe", "A",
+		"A: annually, Q: quarterly. Default: A")
+	flag.BoolVar(&write_data, "write_data", true,
+		"Write data to out_dir in JSON format. Default: false")
+	flag.StringVar(&out_dir, "out_dir", "data",
+		"Output directory. Default: data")
 	flag.Parse()
 
 	// Get a fetcher
@@ -44,7 +50,11 @@ func main() {
 
 	// Fetch data
 	log.Printf("Fetch data for %s\n", ticker)
-	d, err := f.Fetch(ticker, num_year, models.TFAnnual)
+	ptimeframe := models.TFAnnual
+	if timeframe == "Q" {
+		ptimeframe = models.TFQuarterly
+	}
+	d, err := f.Fetch(ticker, num_year, ptimeframe)
 	utils.Check_error(err)
 
 	// Save data in JSON format
