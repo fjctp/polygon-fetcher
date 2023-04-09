@@ -1,31 +1,19 @@
 package main
 
 import (
-	"errors"
 	"flag"
 	"log"
-	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/fjctp/polygon-fetcher/fetcher"
 	"github.com/fjctp/polygon-fetcher/report"
 	"github.com/fjctp/polygon-fetcher/utils"
-	"github.com/polygon-io/client-go/rest/models"
 )
 
 // Output directory for html and json files
 const html_dir = "html"
 const json_dir = "json"
-
-func get_fetcher() (*fetcher.Fetcher, error) {
-	key, isFound := os.LookupEnv("POLYGON_API_KEY")
-	if isFound {
-		return fetcher.New(key), nil
-	} else {
-		return nil, errors.New("Invalid API key")
-	}
-}
 
 func main() {
 	// Define parameters
@@ -41,6 +29,14 @@ func main() {
 		"Output directory. Default: output")
 	flag.Parse()
 
+	// Validate inputs
+	ticker = strings.ToUpper(ticker)
+	timeframe = string([]rune(timeframe)[0])
+	timeframe = strings.ToUpper(timeframe)
+	if timeframe != "A" && timeframe != "Q" {
+		timeframe = "A"
+	}
+
 	// Create directories
 	out_path, err := filepath.Abs(out_dir)
 	utils.CheckError(err)
@@ -51,18 +47,9 @@ func main() {
 	html_path := filepath.Join(out_path, html_dir)
 	utils.MakeDirIfNotExist(html_path)
 
-	// Get a fetcher
-	f, err := get_fetcher()
-	utils.CheckError(err)
-
 	// Fetch data
-	ticker = strings.ToUpper(ticker)
 	log.Printf("Fetch data for %s\n", ticker)
-	ptimeframe := models.TFAnnual
-	if timeframe == "Q" {
-		ptimeframe = models.TFQuarterly
-	}
-	d, err := f.Fetch(ticker, num_year, ptimeframe)
+	d, err := fetcher.FetchData(ticker, num_year, timeframe)
 	utils.CheckError(err)
 
 	// Save data in JSON format
