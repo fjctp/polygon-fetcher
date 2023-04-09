@@ -5,6 +5,7 @@ import (
 	"flag"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/fjctp/polygon-fetcher/fetcher"
 	"github.com/fjctp/polygon-fetcher/report"
@@ -49,6 +50,7 @@ func main() {
 	utils.Check_error(err)
 
 	// Fetch data
+	ticker = strings.ToUpper(ticker)
 	log.Printf("Fetch data for %s\n", ticker)
 	ptimeframe := models.TFAnnual
 	if timeframe == "Q" {
