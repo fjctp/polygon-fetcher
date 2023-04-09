@@ -33,7 +33,7 @@ const templateStr = `
 </html>`
 
 // Create a new html report using the finanical data provided
-func New(finData fetcher.FinData, output_dir string) error {
+func New(ticker string, finData fetcher.FinData, output_dir string) error {
 	// get a new template
 	t, err := template.New("report").Parse(templateStr)
 	if err != nil {
@@ -58,12 +58,12 @@ func New(finData fetcher.FinData, output_dir string) error {
 	}
 
 	r := Report{
-		Name:     finData.Ticker + " Financial Report",
+		Name:     ticker + " Financial Report",
 		Canvases: canvases,
 	}
 
 	// output the html report with data embedded
-	p := filepath.Join(output_dir, finData.Ticker+".html")
+	p := filepath.Join(output_dir, ticker+".html")
 	log.Printf("Write report to %s\n", p)
 	f, err := os.Create(p)
 	if err != nil {

@@ -54,6 +54,6 @@ func main() {
 
 	// Generate a report
 	log.Printf("Generate report for %s\n", ticker)
-	err = report.New(d, html_path)
+	err = report.New(ticker, d, html_path)
 	utils.CheckError(err)
 }
