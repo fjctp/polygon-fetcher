@@ -69,6 +69,7 @@ func New(finData fetcher.FinData, output_dir string) error {
 	if err != nil {
 		return err
 	}
+	defer f.Close()
 	return t.Execute(f, r)
 }
 
