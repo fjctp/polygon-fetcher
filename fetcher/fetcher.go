@@ -35,7 +35,7 @@ func FetchData(ticker string, count int, timeframe string) (FinData, error) {
 		// quarterly
 		mulipler = 3
 		date = now.AddDate(0, -count*mulipler, 0)
-		tf = models.TFAnnual
+		tf = models.TFQuarterly
 	} else {
 		// anually
 		mulipler = 1

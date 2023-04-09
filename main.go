@@ -33,7 +33,7 @@ func main() {
 	ticker = strings.ToUpper(ticker)
 	timeframe = string([]rune(timeframe)[0])
 	timeframe = strings.ToUpper(timeframe)
-	if timeframe != "A" && timeframe != "Q" {
+	if timeframe != "Q" {
 		timeframe = "A"
 	}
 
