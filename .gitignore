@@ -1,6 +1,2 @@
 .env
-
-build/polygon-fetcher
-
-output/
-
+build/
