@@ -7,7 +7,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/fjctp/polygon-fetcher/utils"
 	polygon "github.com/polygon-io/client-go/rest"
 	"github.com/polygon-io/client-go/rest/models"
 )
@@ -23,10 +22,14 @@ func NewFetcher() (*polygon.Client, error) {
 	}
 }
 
-// Fetch finanical data from Polygon using its client
-func FetchData(ticker string, count int, timeframe string) (FinData, error) {
+// Fetch finanical data from Polygon using its client and
+// save the data in JSON format
+func FetchData(ticker string, count int, timeframe string,
+	output_dir string) (FinData, error) {
 	f, err := NewFetcher()
-	utils.CheckError(err)
+	if err != nil {
+		return FinData{}, err
+	}
 
 	var date time.Time
 	var mulipler int
@@ -72,5 +75,12 @@ func FetchData(ticker string, count int, timeframe string) (FinData, error) {
 		data = append(data, item)
 	}
 
-	return FinData{Ticker: ticker, Data: data}, iter.Err()
+	// Save data in JSON format
+	d := FinData{Ticker: ticker, Data: data}
+	err = d.Write(output_dir)
+	if err != nil {
+		return d, err
+	}
+
+	return d, iter.Err()
 }

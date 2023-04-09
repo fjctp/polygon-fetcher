@@ -49,11 +49,7 @@ func main() {
 
 	// Fetch data
 	log.Printf("Fetch data for %s\n", ticker)
-	d, err := fetcher.FetchData(ticker, num_year, timeframe)
-	utils.CheckError(err)
-
-	// Save data in JSON format
-	err = d.Write(json_path)
+	d, err := fetcher.FetchData(ticker, num_year, timeframe, json_path)
 	utils.CheckError(err)
 
 	// Generate a report
