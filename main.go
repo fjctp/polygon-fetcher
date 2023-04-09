@@ -40,7 +40,7 @@ func main() {
 	flag.StringVar(&timeframe, "timeframe", "A",
 		"A: annually, Q: quarterly. Default: A")
 	flag.BoolVar(&write_data, "write_data", true,
-		"Write data to out_dir in JSON format. Default: false")
+		"Write data to out_dir in JSON format. Default: true")
 	flag.StringVar(&out_dir, "out_dir", "data",
 		"Output directory. Default: data")
 	flag.Parse()
