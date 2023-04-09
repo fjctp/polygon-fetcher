@@ -18,7 +18,8 @@ func NewFetcher() (*polygon.Client, error) {
 	if isFound {
 		return polygon.New(key), nil
 	} else {
-		return nil, errors.New("Invalid API key")
+		return nil, errors.New(
+			"Environment variable, POLYGON_API_KEY, is empty")
 	}
 }
 
