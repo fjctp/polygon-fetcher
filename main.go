@@ -18,11 +18,6 @@ import (
 const html_dir = "html"
 const json_dir = "json"
 
-// Hard limit on Polygon API
-const max_item_per_req = 100
-const max_num_of_req = 5
-const max_item = max_item_per_req * max_num_of_req
-
 func get_fetcher() (*fetcher.Fetcher, error) {
 	key, isFound := os.LookupEnv("POLYGON_API_KEY")
 	if isFound {
