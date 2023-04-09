@@ -5,6 +5,7 @@ import (
 	"flag"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/fjctp/polygon-fetcher/fetcher"
@@ -13,11 +14,14 @@ import (
 	"github.com/polygon-io/client-go/rest/models"
 )
 
+// Output directory for html and json files
+const html_dir = "html"
+const json_dir = "json"
+
+// Hard limit on Polygon API
 const max_item_per_req = 100
 const max_num_of_req = 5
 const max_item = max_item_per_req * max_num_of_req
-
-const timeframe = models.TFQuarterly
 
 func get_fetcher() (*fetcher.Fetcher, error) {
 	key, isFound := os.LookupEnv("POLYGON_API_KEY")
@@ -31,7 +35,6 @@ func get_fetcher() (*fetcher.Fetcher, error) {
 func main() {
 	// Define parameters
 	var ticker, timeframe, out_dir string
-	var write_data bool
 	var num_year int
 	flag.StringVar(&ticker, "ticker", "AAPL",
 		"Get data for ticker. Default AAPL")
@@ -39,15 +42,23 @@ func main() {
 		"Get data for the last number of years. Default: 50")
 	flag.StringVar(&timeframe, "timeframe", "A",
 		"A: annually, Q: quarterly. Default: A")
-	flag.BoolVar(&write_data, "write_data", true,
-		"Write data to out_dir in JSON format. Default: true")
-	flag.StringVar(&out_dir, "out_dir", "data",
-		"Output directory. Default: data")
+	flag.StringVar(&out_dir, "out_dir", "output",
+		"Output directory. Default: output")
 	flag.Parse()
+
+	// Create directories
+	out_path, err := filepath.Abs(out_dir)
+	utils.CheckError(err)
+
+	json_path := filepath.Join(out_path, json_dir)
+	utils.MakeDir(json_path)
+
+	html_path := filepath.Join(out_path, html_dir)
+	utils.MakeDir(html_path)
 
 	// Get a fetcher
 	f, err := get_fetcher()
-	utils.Check_error(err)
+	utils.CheckError(err)
 
 	// Fetch data
 	ticker = strings.ToUpper(ticker)
@@ -57,16 +68,14 @@ func main() {
 		ptimeframe = models.TFQuarterly
 	}
 	d, err := f.Fetch(ticker, num_year, ptimeframe)
-	utils.Check_error(err)
+	utils.CheckError(err)
 
 	// Save data in JSON format
-	if write_data {
-		err = d.Write(out_dir)
-		utils.Check_error(err)
-	}
+	err = d.Write(json_path)
+	utils.CheckError(err)
 
 	// Generate a report
 	log.Printf("Generate report for %s\n", ticker)
-	err = report.New(d)
-	utils.Check_error(err)
+	err = report.New(d, html_path)
+	utils.CheckError(err)
 }

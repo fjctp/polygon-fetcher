@@ -2,5 +2,5 @@
 
 build/polygon-fetcher
 
-data/*.json
+output/
 

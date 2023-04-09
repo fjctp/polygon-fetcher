@@ -2,7 +2,9 @@ package report
 
 import (
 	"html/template"
+	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/fjctp/polygon-fetcher/fetcher"
 )
@@ -31,7 +33,7 @@ const templateStr = `
 </html>`
 
 // Create a new html report using the finanical data provided
-func New(finData fetcher.FinData) error {
+func New(finData fetcher.FinData, output_dir string) error {
 	// get a new template
 	t, err := template.New("report").Parse(templateStr)
 	if err != nil {
@@ -61,11 +63,13 @@ func New(finData fetcher.FinData) error {
 	}
 
 	// output the html report with data embedded
-	err = t.Execute(os.Stdout, r)
+	p := filepath.Join(output_dir, finData.Ticker+".html")
+	log.Printf("Write report to %s\n", p)
+	f, err := os.Create(p)
 	if err != nil {
 		return err
 	}
-	return nil
+	return t.Execute(f, r)
 }
 
 // Create a chart for the balance sheet data
