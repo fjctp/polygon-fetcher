@@ -51,10 +51,10 @@ func main() {
 	utils.CheckError(err)
 
 	json_path := filepath.Join(out_path, json_dir)
-	utils.MakeDir(json_path)
+	utils.MakeDirIfNotExist(json_path)
 
 	html_path := filepath.Join(out_path, html_dir)
-	utils.MakeDir(html_path)
+	utils.MakeDirIfNotExist(html_path)
 
 	// Get a fetcher
 	f, err := get_fetcher()
