@@ -17,15 +17,15 @@ const json_dir = "json"
 
 func main() {
 	// Define parameters
-	var ticker, timeframe, out_dir string
 	var num_year int
+	var ticker, timeframe, output_dir string
 	flag.StringVar(&ticker, "ticker", "AAPL",
 		"Get data for ticker. Default AAPL")
 	flag.IntVar(&num_year, "num_year", 50,
 		"Get data for the last number of years. Default: 50")
 	flag.StringVar(&timeframe, "timeframe", "A",
 		"A: annually, Q: quarterly. Default: A")
-	flag.StringVar(&out_dir, "out_dir", "output",
+	flag.StringVar(&output_dir, "output_dir", "output",
 		"Output directory. Default: output")
 	flag.Parse()
 
@@ -38,7 +38,7 @@ func main() {
 	}
 
 	// Create directories
-	out_path, err := filepath.Abs(out_dir)
+	out_path, err := filepath.Abs(output_dir)
 	utils.CheckError(err)
 
 	json_path := filepath.Join(out_path, json_dir)
