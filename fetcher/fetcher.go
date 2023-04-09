@@ -47,7 +47,8 @@ func FetchData(ticker string, count int, timeframe string) (FinData, error) {
 	params := models.ListStockFinancialsParams{}.
 		WithTicker(ticker).
 		WithTimeframe(tf).
-		WithPeriodOfReportDate(models.GTE, models.Date(date))
+		WithPeriodOfReportDate(models.GTE, models.Date(date)).
+		WithLimit(100)
 
 	// make request
 	iter := f.VX.ListStockFinancials(context.Background(), params)
