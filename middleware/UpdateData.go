@@ -36,6 +36,7 @@ func (l *UpdateData) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			err := l.f(ticker, num_terms, term)
 			if err != nil {
 				// FIXME: return 404
+				log.Println(err)
 			}
 		}
 	}
