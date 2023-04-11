@@ -62,7 +62,7 @@ func FetchData(ticker string, count int, timeframe string,
 	for ind := 0; ind < (count * mulipler); ind++ {
 		if !iter.Next() {
 			if ind == 0 {
-				log.Fatal("Invalid ticker")
+				return FinData{}, errors.New("Invalid ticker")
 			}
 			// reach the end of the results
 			log.Print("End of record")
