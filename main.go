@@ -3,10 +3,13 @@ package main
 import (
 	"flag"
 	"log"
+	"net/http"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/fjctp/polygon-fetcher/fetcher"
+	"github.com/fjctp/polygon-fetcher/middleware"
 	"github.com/fjctp/polygon-fetcher/report"
 	"github.com/fjctp/polygon-fetcher/utils"
 )
@@ -15,27 +18,51 @@ import (
 const html_dir = "html"
 const json_dir = "json"
 
+func updateJsonReports(json_path string, html_path string) middleware.Updater {
+
+	return func(ticker string, num_terms int, term string) error {
+		// Validate inputs
+		ticker = strings.ToUpper(ticker)
+		term = string([]rune(term)[0])
+		term = strings.ToUpper(term)
+		if term != "Q" {
+			term = "A"
+		}
+
+		// Fetch data
+		var d fetcher.FinData
+		var err error
+		t_json_path := filepath.Join(json_path, ticker+".json")
+		if !utils.Exist(t_json_path) {
+			log.Printf("Data does not exist for for %s, fetching...\n", ticker)
+			d, err = fetcher.FetchData(ticker, num_terms, term, json_path)
+			if err != nil {
+				return err
+			}
+		}
+
+		// Generate a report
+		t_html_path := filepath.Join(html_path, ticker+".html")
+		if !utils.Exist(t_html_path) {
+			log.Printf("Report does not exist for %s, generating...\n", ticker)
+			err = report.New(ticker, d, html_path)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+}
+
 func main() {
 	// Define parameters
-	var num_year int
-	var ticker, timeframe, output_dir string
-	flag.StringVar(&ticker, "ticker", "AAPL",
-		"Get data for ticker. Default AAPL")
-	flag.IntVar(&num_year, "num_year", 50,
-		"Get data for the last number of years. Default: 50")
-	flag.StringVar(&timeframe, "timeframe", "A",
-		"A: annually, Q: quarterly. Default: A")
+	var output_dir string
+	var port int
 	flag.StringVar(&output_dir, "output_dir", "output",
 		"Output directory. Default: output")
+	flag.IntVar(&port, "port", 80,
+		"Server listent port. Default: 80")
 	flag.Parse()
-
-	// Validate inputs
-	ticker = strings.ToUpper(ticker)
-	timeframe = string([]rune(timeframe)[0])
-	timeframe = strings.ToUpper(timeframe)
-	if timeframe != "Q" {
-		timeframe = "A"
-	}
 
 	// Create directories
 	out_path, err := filepath.Abs(output_dir)
@@ -47,13 +74,12 @@ func main() {
 	html_path := filepath.Join(out_path, html_dir)
 	utils.MakeDirIfNotExist(html_path)
 
-	// Fetch data
-	log.Printf("Fetch data for %s\n", ticker)
-	d, err := fetcher.FetchData(ticker, num_year, timeframe, json_path)
-	utils.CheckError(err)
-
-	// Generate a report
-	log.Printf("Generate report for %s\n", ticker)
-	err = report.New(ticker, d, html_path)
-	utils.CheckError(err)
+	// Server
+	addr := ":" + strconv.Itoa(port)
+	log.Printf("Serving %s at %s", html_path, addr)
+	h := http.FileServer(http.Dir(html_path))
+	hs := middleware.NewHttpLogger(
+		middleware.NewUpdateData(
+			h, updateJsonReports(json_path, html_path)))
+	http.ListenAndServe(addr, hs)
 }
