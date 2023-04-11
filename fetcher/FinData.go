@@ -4,14 +4,31 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
+	"os"
 	"path/filepath"
 
 	"github.com/polygon-io/client-go/rest/models"
 )
 
 type FinData struct {
-	Ticker string
-	Data   []models.StockFinancial
+	Ticker string                  `json:"ticker"`
+	Data   []models.StockFinancial `json:"data"`
+}
+
+// FIXME: not working
+// error message: json: cannot unmarshal object into Go value of type []models.StockFinancial
+func ReadFile(path string) (FinData, error) {
+	content, err := os.ReadFile(path)
+	if err != nil {
+		return FinData{}, err
+	}
+
+	var d FinData
+	err = json.Unmarshal(content, &d)
+	if err != nil {
+		return FinData{}, err
+	}
+	return d, nil
 }
 
 func (d FinData) Write(out_dir string) error {

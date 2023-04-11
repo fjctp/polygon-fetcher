@@ -39,6 +39,12 @@ func updateJsonReports(json_path string, html_path string) middleware.Updater {
 			if err != nil {
 				return err
 			}
+		} else {
+			log.Printf("Data exists for for %s\n", ticker)
+			d, err = fetcher.ReadFile(t_json_path)
+			if err != nil {
+				return err
+			}
 		}
 
 		// Generate a report
