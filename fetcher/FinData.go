@@ -16,7 +16,7 @@ type FinData struct {
 
 func (d FinData) Write(out_dir string) error {
 	// write data to a JSON file named by ticker
-	bytes, err := json.MarshalIndent(d.Data, "", "  ")
+	bytes, err := json.MarshalIndent(d, "", "  ")
 	if err != nil {
 		return err
 	}
