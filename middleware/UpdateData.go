@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+// Check if it is a valid ticker
 func IsValidTicker(s string) bool {
 	for _, r := range s {
 		if (r < 'a' || r > 'z') && (r < 'A' || r > 'Z') {
@@ -15,18 +16,21 @@ func IsValidTicker(s string) bool {
 	return true
 }
 
+// A middleware that calls f() before calling h.ServeHTTP()
 type UpdateData struct {
 	h http.Handler
 	f Updater
 }
 
+// An interface definition for an Updater()
 type Updater func(string, int, string) error
 
+// Constant parameters
 const num_terms = 20
 const term = "Q" // Q: quarterly, A: annually
 
 // ServeHTTP handles the request by passing it to the real
-// handler and logging the request details
+// handler and generate a html report if it does not exist
 func (l *UpdateData) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 		htmlPage := strings.TrimLeft(r.URL.Path, "/")

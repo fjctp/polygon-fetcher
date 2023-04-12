@@ -9,6 +9,7 @@ import (
 	"github.com/fjctp/polygon-fetcher/fetcher"
 )
 
+// HTML template
 const templateStr = `
 <!DOCTYPE html>
 <html>
@@ -41,11 +42,20 @@ func New(ticker string, finData fetcher.FinData, output_dir string) error {
 	}
 
 	// create data structure for the template
+	// The key is the canvas ID.
+	// The first value is the financial statement name,
+	//   where data comes from.
+	// The second and beyond values are the field names
+	//   from a financial statement.
 	summary := make(map[string][]string)
-	summary["chart1"] = []string{"balance_sheet", "assets", "equity", "liabilities"}
-	summary["chart2"] = []string{"cash_flow_statement", "net_cash_flow"}
-	summary["chart3"] = []string{"income_statement", "basic_earnings_per_share"}
-	summary["chart4"] = []string{"income_statement", "cost_of_revenue", "gross_profit", "net_income_loss", "revenues"}
+	summary["chart1"] = []string{"balance_sheet",
+		"assets", "equity", "liabilities"}
+	summary["chart2"] = []string{"cash_flow_statement",
+		"net_cash_flow"}
+	summary["chart3"] = []string{"income_statement",
+		"basic_earnings_per_share"}
+	summary["chart4"] = []string{"income_statement",
+		"cost_of_revenue", "gross_profit", "net_income_loss", "revenues"}
 	count := int(1)
 	var canvases []Canvas
 	for k, v := range summary {

@@ -15,8 +15,7 @@ type FinData struct {
 	Data   []models.StockFinancial `json:"data"`
 }
 
-// FIXME: not working
-// error message: json: cannot unmarshal object into Go value of type []models.StockFinancial
+// Read data from a JSON file and output a populated FinData structure
 func ReadFile(path string) (FinData, error) {
 	content, err := os.ReadFile(path)
 	if err != nil {
@@ -31,6 +30,7 @@ func ReadFile(path string) (FinData, error) {
 	return d, nil
 }
 
+// Write FinData to a JSON file
 func (d FinData) Write(out_dir string) error {
 	// write data to a JSON file named by ticker
 	bytes, err := json.MarshalIndent(d, "", "  ")
