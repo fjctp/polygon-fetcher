@@ -14,7 +14,7 @@ import (
 // Get an instance of Fetcher
 func NewFetcher() (*polygon.Client, error) {
 	key, isFound := os.LookupEnv("POLYGON_API_KEY")
-	if isFound {
+	if isFound && key != ""{
 		return polygon.New(key), nil
 	} else {
 		return nil, errors.New(
