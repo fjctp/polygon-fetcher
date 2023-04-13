@@ -48,6 +48,7 @@ func FetchData(ticker string, count int, timeframe string,
 	}
 
 	// set params
+	log.Printf("Get data since %s\n", date.Format("2006-01-02"))
 	params := models.ListStockFinancialsParams{}.
 		WithTicker(ticker).
 		WithTimeframe(tf).
