@@ -3,6 +3,7 @@ package utils
 import (
 	"log"
 	"os"
+	"time"
 )
 
 // If there is an err, log it
@@ -27,4 +28,15 @@ func MakeDirIfNotExist(path string) {
 		err := os.MkdirAll(path, 0750)
 		CheckError(err)
 	}
+}
+
+// Check if a file is modified in the last X amount of years, months, and days
+func FileOlderThan(path string, years int, months int, days int) bool {
+	if Exist(path) {
+		info, _ := os.Stat(path)
+		now := time.Now()
+		ref := now.AddDate(-years, -months, -days)
+		return ref.After(info.ModTime())
+	}
+	return false
 }

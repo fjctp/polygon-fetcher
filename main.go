@@ -19,6 +19,8 @@ const html_dir = "html"
 const json_dir = "json"
 
 func updateJsonReports(json_path string, html_path string) middleware.Updater {
+	// Update JSON data or HTML report if it is older than a certain amount of days
+	olderThanDays := 30 * 3
 
 	return func(ticker string, num_terms int, term string) error {
 		// Validate inputs
@@ -33,8 +35,10 @@ func updateJsonReports(json_path string, html_path string) middleware.Updater {
 		var d fetcher.FinData
 		var err error
 		t_json_path := filepath.Join(json_path, ticker+".json")
-		if !utils.Exist(t_json_path) {
-			log.Printf("Data does not exist for for %s, fetching...\n", ticker)
+		update_json := !utils.Exist(t_json_path) ||
+			utils.FileOlderThan(t_json_path, 0, 0, olderThanDays)
+		if update_json {
+			log.Printf("Data does not exist or is outdated for for %s, fetching...\n", ticker)
 			d, err = fetcher.FetchData(ticker, num_terms, term, json_path)
 			if err != nil {
 				return err
@@ -49,8 +53,10 @@ func updateJsonReports(json_path string, html_path string) middleware.Updater {
 
 		// Generate a report
 		t_html_path := filepath.Join(html_path, ticker+".html")
-		if !utils.Exist(t_html_path) {
-			log.Printf("Report does not exist for %s, generating...\n", ticker)
+		update_html := !utils.Exist(t_html_path) ||
+			utils.FileOlderThan(t_html_path, 0, 0, olderThanDays)
+		if update_json || update_html {
+			log.Printf("Report does not exist or is outdated for %s, generating...\n", ticker)
 			err = report.New(ticker, d, html_path)
 			if err != nil {
 				return err
