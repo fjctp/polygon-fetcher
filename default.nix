@@ -3,5 +3,6 @@
     nativeBuildInputs = [ 
       pkgs.go
       pkgs.just
-      pkgs.miniserve];
+      pkgs.git
+      pkgs.jq];
 }
