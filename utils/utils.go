@@ -23,11 +23,14 @@ func Exist(path string) bool {
 }
 
 // Make a directory if the path does not exist
-func MakeDirIfNotExist(path string) {
-	if Exist(path) {
+func MakeDirIfNotExist(path string) error {
+	if !Exist(path) {
 		err := os.MkdirAll(path, 0750)
-		CheckError(err)
+		if err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 // Check if a file is modified in the last X amount of years, months, and days

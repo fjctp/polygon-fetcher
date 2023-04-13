@@ -81,10 +81,10 @@ func main() {
 	utils.CheckError(err)
 
 	json_path := filepath.Join(out_path, json_dir)
-	utils.MakeDirIfNotExist(json_path)
+	utils.CheckError(utils.MakeDirIfNotExist(json_path))
 
 	html_path := filepath.Join(out_path, html_dir)
-	utils.MakeDirIfNotExist(html_path)
+	utils.CheckError(utils.MakeDirIfNotExist(html_path))
 
 	// Server
 	addr := ":" + strconv.Itoa(port)
