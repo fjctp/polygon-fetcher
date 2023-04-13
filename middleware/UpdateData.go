@@ -26,7 +26,7 @@ type UpdateData struct {
 type Updater func(string, int, string) error
 
 // Constant parameters
-const num_terms = 20
+const num_terms = 30 * 4
 const term = "Q" // Q: quarterly, A: annually
 
 // ServeHTTP handles the request by passing it to the real
