@@ -42,29 +42,19 @@ func New(ticker string, finData fetcher.FinData, output_dir string) error {
 	}
 
 	// create data structure for the template
-	// The key is the canvas ID.
-	// The first value is the financial statement name,
-	//   where data comes from.
-	// The second and beyond values are the field names
-	//   from a financial statement.
-	summary := make(map[string][]string)
-	summary["chart1"] = []string{"balance_sheet",
-		"assets", "equity", "liabilities"}
-	summary["chart2"] = []string{"cash_flow_statement",
-		"net_cash_flow"}
-	summary["chart3"] = []string{"income_statement",
-		"basic_earnings_per_share"}
-	summary["chart4"] = []string{"income_statement",
-		"cost_of_revenue", "gross_profit", "net_income_loss", "revenues"}
-	count := int(1)
+	pairs := []FinanicalChartPair{
+		NewFinanicalChartPair("chart1", "balance_sheet",
+			"assets", "equity", "liabilities"),
+		NewFinanicalChartPair("chart2", "cash_flow_statement",
+			"net_cash_flow"),
+		NewFinanicalChartPair("chart3", "income_statement",
+			"basic_earnings_per_share"),
+		NewFinanicalChartPair("chart4", "income_statement",
+			"cost_of_revenue", "gross_profit", "net_income_loss", "revenues")}
+
 	var canvases []Canvas
-	for k, v := range summary {
-		chart := getChart(finData, v[0], v[1:])
-
-		canvas := Canvas{Id: k, Data: chart}
-		canvases = append(canvases, canvas)
-
-		count++
+	for _, v := range pairs {
+		canvases = append(canvases, getFinancialCanvas(finData, v))
 	}
 
 	r := Report{
@@ -81,52 +71,4 @@ func New(ticker string, finData fetcher.FinData, output_dir string) error {
 	}
 	defer f.Close()
 	return t.Execute(f, r)
-}
-
-// Create a chart for the balance sheet data
-func getChart(finData fetcher.FinData, sName string, keys []string) Chart {
-	// extract data from finData
-	datasetLabels := make(map[string]string) // labels for lines
-	var xdata []string                       // xdata for a chart
-	ydata := make(map[string][]float32)
-	for i, record := range finData.Data {
-		// get fiscal year for each data point
-		// insert the new data at the start of the slice
-		fiscalLabel := record.FiscalYear + " " + record.FiscalPeriod
-		xdata = append([]string{fiscalLabel}, xdata...)
-
-		// get data for each keys
-		statement := record.Financials[sName]
-		for _, key := range keys {
-			info := statement[key]
-
-			// get label for the line
-			if i == 0 {
-				datasetLabels[key] = info.Label
-			}
-			// get ydata for each data point
-			// insert the new data at the start of the slice
-			val := float32(info.Value)
-			ydata[key] = append([]float32{val}, ydata[key]...)
-		}
-	}
-
-	// create an array of dataset object
-	var datasets []ChartDataSet
-	for _, key := range keys {
-		cds := ChartDataSet{
-			Label:       datasetLabels[key],
-			Data:        ydata[key],
-			BorderWidth: 1,
-		}
-		datasets = append(datasets, cds)
-	}
-
-	// Create data struct
-	cData := ChartData{
-		Labels:   xdata,
-		Datasets: datasets,
-	}
-	cOpt := ChartOptions{}
-	return Chart{Type: "line", Data: cData, Options: cOpt}
 }
