@@ -57,7 +57,7 @@ func updateJsonReports(json_path string, html_path string) middleware.Updater {
 			utils.FileOlderThan(t_html_path, 0, 0, olderThanDays)
 		if update_json || update_html {
 			log.Printf("Report does not exist or is outdated for %s, generating...\n", ticker)
-			err = report.New(ticker, d, html_path)
+			err = report.New(d, html_path)
 			if err != nil {
 				return err
 			}
