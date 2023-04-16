@@ -39,7 +39,7 @@ func updateJsonReports(json_path string, html_path string) middleware.Updater {
 			utils.FileOlderThan(t_json_path, 0, 0, olderThanDays)
 		if update_json {
 			log.Printf("Data does not exist or is outdated for for %s, fetching...\n", ticker)
-			d, err = fetcher.FetchData(ticker, num_terms, term, json_path)
+			d, err = fetcher.FetchFinData(ticker, num_terms, term, json_path)
 			if err != nil {
 				return err
 			}
