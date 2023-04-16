@@ -2,26 +2,41 @@ package report
 
 import "github.com/fjctp/polygon-fetcher/fetcher"
 
-// A FinanicalChartPair that constains data for a finanical chart
-type FinanicalChartPair struct {
-	Id     string   // Canvas ID
-	Name   string   // finanical statement name
-	Fields []string // field names from the financial statement
+// Create a canvas with balance sheet's charts
+func NewBalanceSheetCanvas(finData fetcher.FinData, id string) Canvas {
+	return newFinancialCanvas(finData, id, "balance_sheet",
+		"assets", "equity", "liabilities")
 }
 
-// Get FinanicalChartPair
-func NewFinanicalChartPair(id string, name string, fields ...string) FinanicalChartPair {
-	return FinanicalChartPair{Id: id, Name: name, Fields: fields}
+// Create a canvas with cash flow's charts
+func NewCashFlowCanvas(finData fetcher.FinData, id string) Canvas {
+	return newFinancialCanvas(finData, id, "cash_flow_statement",
+		"net_cash_flow")
 }
 
-// Create a canvas for the balance sheet data
-func getFinancialCanvas(finData fetcher.FinData, pair FinanicalChartPair) Canvas {
-	chart := getFinancialChart(finData, pair)
-	return Canvas{Id: pair.Id, Data: chart}
+// Create a canvas with EPS's charts
+func NewEpsCanvas(finData fetcher.FinData, id string) Canvas {
+	return newFinancialCanvas(finData, id, "income_statement",
+		"basic_earnings_per_share")
+}
+
+// Create a canvas with Income and profit's charts
+func NewIncomeProfitCanvas(finData fetcher.FinData, id string) Canvas {
+	return newFinancialCanvas(finData, id, "income_statement",
+		"cost_of_revenue", "gross_profit", "net_income_loss", "revenues")
+}
+
+// Create a canvas for data in a statements (balance_sheet,
+// cash_flow_statement, income_statement)
+func newFinancialCanvas(finData fetcher.FinData, id string,
+	statement string, fields ...string) Canvas {
+	chart := newFinancialChart(finData, statement, fields...)
+	return Canvas{Id: id, Data: chart}
 }
 
 // Create a chart for the balance sheet data
-func getFinancialChart(finData fetcher.FinData, pair FinanicalChartPair) Chart {
+func newFinancialChart(finData fetcher.FinData, statement string,
+	fields ...string) Chart {
 	// extract data from finData
 	datasetLabels := make(map[string]string) // labels for lines
 	var xdata []string                       // xdata for a chart
@@ -33,8 +48,8 @@ func getFinancialChart(finData fetcher.FinData, pair FinanicalChartPair) Chart {
 		xdata = append([]string{fiscalLabel}, xdata...)
 
 		// get data for each keys
-		statement := record.Financials[pair.Name]
-		for _, key := range pair.Fields {
+		statement := record.Financials[statement]
+		for _, key := range fields {
 			info := statement[key]
 
 			// get label for the line
@@ -50,7 +65,7 @@ func getFinancialChart(finData fetcher.FinData, pair FinanicalChartPair) Chart {
 
 	// create an array of dataset object
 	var datasets []ChartDataSet
-	for _, key := range pair.Fields {
+	for _, key := range fields {
 		cds := ChartDataSet{
 			Label:       datasetLabels[key],
 			Data:        ydata[key],

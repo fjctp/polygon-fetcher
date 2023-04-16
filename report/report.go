@@ -42,24 +42,14 @@ func New(finData fetcher.FinData, output_dir string) error {
 	}
 
 	// create data structure for the template
-	pairs := []FinanicalChartPair{
-		NewFinanicalChartPair("chart1", "balance_sheet",
-			"assets", "equity", "liabilities"),
-		NewFinanicalChartPair("chart2", "cash_flow_statement",
-			"net_cash_flow"),
-		NewFinanicalChartPair("chart3", "income_statement",
-			"basic_earnings_per_share"),
-		NewFinanicalChartPair("chart4", "income_statement",
-			"cost_of_revenue", "gross_profit", "net_income_loss", "revenues")}
-
-	var canvases []Canvas
-	for _, v := range pairs {
-		canvases = append(canvases, getFinancialCanvas(finData, v))
-	}
-
 	r := Report{
-		Name:     finData.Data[0].CompanyName + " Financial Report",
-		Canvases: canvases,
+		Name: finData.Data[0].CompanyName + " Financial Report",
+		Canvases: []Canvas{
+			NewBalanceSheetCanvas(finData, "chart1"),
+			NewCashFlowCanvas(finData, "chart2"),
+			NewEpsCanvas(finData, "chart3"),
+			NewIncomeProfitCanvas(finData, "chart4"),
+		},
 	}
 
 	// output the html report with data embedded
