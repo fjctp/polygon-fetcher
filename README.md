@@ -43,5 +43,5 @@ just serve
 Define `POLYGON_API_KEY` in `.env`.
 
 ```
-podman run -it --rm -p 3000:80 --env-file .env -v $PWD/output/:/data fjctp/polygon-fetcher:release
+podman run -it --rm -p 3000:80 --env-file .env -v $PWD/output/:/data fjctp/polygon-fetcher:latest
 ```
