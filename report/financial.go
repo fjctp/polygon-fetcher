@@ -52,12 +52,22 @@ func newFinancialChart(finData []models.StockFinancial,
 		xdata = append(xdata, fiscalLabel)
 
 		// get data for each keys
-		statement := record.Financials[statement]
+		statement, ok := record.Financials[statementName]
+		if !ok {
+			log.Printf("%s does not exist for %s.\n",
+				statementName, fiscalLabel)
+			continue
+		}
 		for _, key := range fields {
-			info := statement[key]
+			info, ok := statement[key]
+			if !ok {
+				log.Printf("%s.%s does not exist for %s.\n",
+					statementName, key, fiscalLabel)
+				continue
+			}
 
 			// get label for the line
-			if i == 0 {
+			if _, ok := datasetLabels[key]; !ok {
 				datasetLabels[key] = info.Label
 			}
 			// get ydata for each data point
