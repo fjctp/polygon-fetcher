@@ -33,6 +33,13 @@ func (f Fetcher) Fetch(ticker string) (tickerData.TickerData, error) {
 		return tickerData.TickerData{}, err
 	}
 
+	// Fetch dividend data
+	log.Println("Fetch dividend data")
+	ddata, err := FetchDividendData(f, ticker, 1000)
+	if err != nil {
+		return tickerData.TickerData{}, err
+	}
+
 	// Return data
 	cname := fdata[0].CompanyName
 	return tickerData.New(ticker, cname, fdata, ddata), nil
