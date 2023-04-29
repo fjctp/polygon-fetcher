@@ -36,7 +36,8 @@ func FetchFinData(f Fetcher, ticker string, count int,
 		WithTicker(ticker).
 		WithTimeframe(tf).
 		WithPeriodOfReportDate(models.GTE, models.Date(date)).
-		WithLimit(100)
+		WithLimit(100).
+		WithOrder(models.Asc)
 
 	// make request
 	iter := f.polygon.VX.ListStockFinancials(context.Background(), params)

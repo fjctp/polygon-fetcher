@@ -49,7 +49,7 @@ func newFinancialChart(finData []models.StockFinancial,
 		// get fiscal year for each data point
 		// insert the new data at the start of the slice
 		fiscalLabel := record.FiscalYear + " " + record.FiscalPeriod
-		xdata = append([]string{fiscalLabel}, xdata...)
+		xdata = append(xdata, fiscalLabel)
 
 		// get data for each keys
 		statement := record.Financials[statement]
@@ -63,7 +63,7 @@ func newFinancialChart(finData []models.StockFinancial,
 			// get ydata for each data point
 			// insert the new data at the start of the slice
 			val := float32(info.Value)
-			ydata[key] = append([]float32{val}, ydata[key]...)
+			ydata[key] = append(ydata[key], val)
 		}
 	}
 
