@@ -3,8 +3,9 @@ set dotenv-load
 build:
   go build -ldflags "-s -w" -o polygon-fetcher
 
-test:
-  go test -v ./utils
+test opts="":
+  go test {{opts}} ./utils
+  go test {{opts}} ./tickerData
 
 clean:
   rm polygon-fetcher
