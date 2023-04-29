@@ -11,13 +11,18 @@ import (
 	"github.com/polygon-io/client-go/rest/models"
 )
 
-func getTestData() (string, []models.StockFinancial, []models.Dividend) {
+func getTestData() (string, string, []models.StockFinancial,
+	[]models.Dividend) {
+
+	// Reference data
 	finRef := models.StockFinancial{
 		CompanyName: "APPLE", StartDate: "01-01-1990"}
 	dividendRef := models.Dividend{
 		Ticker: "AAPL", CashAmount: 1234}
 
+	// Output data
 	const ticker = "AAPL"
+	const company_name = "Apple"
 	finData := make([]models.StockFinancial, 2)
 	finData[0] = finRef
 	finData[1] = finRef
@@ -26,13 +31,13 @@ func getTestData() (string, []models.StockFinancial, []models.Dividend) {
 	dividendData[0] = dividendRef
 	dividendData[1] = dividendRef
 
-	return ticker, finData, dividendData
+	return ticker, company_name, finData, dividendData
 }
 
 // TestNew calls tickerData.New, checking for a valid return value.
 func TestNew(t *testing.T) {
-	ticker, fdata, ddata := getTestData()
-	testData := tickerData.New(ticker, fdata, ddata)
+	ticker, cname, fdata, ddata := getTestData()
+	testData := tickerData.New(ticker, cname, fdata, ddata)
 
 	// Check TickerData.Ticker
 	val1 := testData.Ticker
@@ -59,8 +64,8 @@ func TestNew(t *testing.T) {
 }
 
 func TestReadFile(t *testing.T) {
-	ticker, fdata, ddata := getTestData()
-	testData := tickerData.New(ticker, fdata, ddata)
+	ticker, cname, fdata, ddata := getTestData()
+	testData := tickerData.New(ticker, cname, fdata, ddata)
 
 	// Make temporary directory
 	out_dir, err := os.MkdirTemp("", "example")
@@ -108,8 +113,8 @@ func TestReadFile(t *testing.T) {
 // TestWrite calls TickerData.Write with a temporary directory,
 // checking for the generated JSON data file.
 func TestWrite(t *testing.T) {
-	ticker, fdata, ddata := getTestData()
-	testData := tickerData.New(ticker, fdata, ddata)
+	ticker, cname, fdata, ddata := getTestData()
+	testData := tickerData.New(ticker, cname, fdata, ddata)
 
 	// Make temporary directory
 	out_dir, err := os.MkdirTemp("", "example")

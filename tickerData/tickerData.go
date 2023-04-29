@@ -11,14 +11,16 @@ import (
 )
 
 type TickerData struct {
-	Ticker    string                  `json:"ticker"`
-	Financial []models.StockFinancial `json:"financial"`
-	Dividend  []models.Dividend       `json:"dividend"`
+	Ticker      string                  `json:"ticker"`
+	CompanyName string                  `json:"company_name"`
+	Financial   []models.StockFinancial `json:"financial"`
+	Dividend    []models.Dividend       `json:"dividend"`
 }
 
-func New(ticker string, fin []models.StockFinancial,
+func New(ticker string, company_name string,
+	fin []models.StockFinancial,
 	dividend []models.Dividend) TickerData {
-	return TickerData{ticker, fin, dividend}
+	return TickerData{ticker, company_name, fin, dividend}
 }
 
 // Read data from a JSON file and output a populated TickerData structure
