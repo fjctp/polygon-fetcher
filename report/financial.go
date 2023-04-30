@@ -35,7 +35,7 @@ func NewIncomeProfitCanvas(finData []models.StockFinancial, id string) Canvas {
 func newFinancialCanvas(finData []models.StockFinancial, id string,
 	statement string, fields ...string) Canvas {
 	chart := newFinancialChart(finData, statement, fields...)
-	return Canvas{Id: id, Data: chart}
+	return NewCanvas(id, chart)
 }
 
 // Create a chart for the balance sheet data
@@ -77,22 +77,5 @@ func newFinancialChart(finData []models.StockFinancial,
 		}
 	}
 
-	// create an array of dataset object
-	var datasets []ChartDataSet
-	for _, key := range fields {
-		cds := ChartDataSet{
-			Label:       datasetLabels[key],
-			Data:        ydata[key],
-			BorderWidth: 1,
-		}
-		datasets = append(datasets, cds)
-	}
-
-	// Create data struct
-	cData := ChartData{
-		Labels:   xdata,
-		Datasets: datasets,
-	}
-	cOpt := ChartOptions{}
-	return Chart{Type: "line", Data: cData, Options: cOpt}
+	return NewLineChart(xdata, ydata, datasetLabels)
 }
