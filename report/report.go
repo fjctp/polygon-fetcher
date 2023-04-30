@@ -49,6 +49,7 @@ func New(tData tickerData.TickerData, output_dir string) error {
 			NewCashFlowCanvas(tData.Financial, "chart2"),
 			NewEpsCanvas(tData.Financial, "chart3"),
 			NewIncomeProfitCanvas(tData.Financial, "chart4"),
+			NewDividendCanvas(tData.Dividend, "chart5"),
 		},
 	}
 
