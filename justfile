@@ -10,5 +10,8 @@ test opts="":
 clean:
   rm polygon-fetcher
 
+reset:
+  rm -rf ./data
+
 serve:
-  ./polygon-fetcher -output_dir ./build/output -port 80
+  ./polygon-fetcher -output_dir ./data -port 80
