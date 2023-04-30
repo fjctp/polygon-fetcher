@@ -1,11 +1,5 @@
 package report
 
-// A report that contains multiple Canvases
-type Report struct {
-	Name     string
-	Canvases []Canvas
-}
-
 // A canvas that contains a chart.
 type Canvas struct {
 	Id   string

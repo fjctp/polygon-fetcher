@@ -33,6 +33,12 @@ const templateStr = `
     </script>
 </html>`
 
+// A report that contains multiple Canvases
+type Report struct {
+	Name     string
+	Canvases []Canvas
+}
+
 // Create a new html report using the finanical data provided
 func New(tData tickerData.TickerData, output_dir string) error {
 	// get a new template
