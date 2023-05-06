@@ -1,6 +1,6 @@
-FROM golang:1.20-alpine3.17 AS builder
+FROM golang:1.19-alpine3.17 AS builder
 WORKDIR /app
-RUN apk add --no-cache just
+RUN apk add --no-cache just gcc libc-dev
 
 FROM builder as build1
 COPY . /app
