@@ -11,6 +11,7 @@ import (
 	"github.com/fjctp/polygon-fetcher/fetcher"
 	"github.com/fjctp/polygon-fetcher/middleware"
 	"github.com/fjctp/polygon-fetcher/report"
+	"github.com/fjctp/polygon-fetcher/tickerData"
 	"github.com/fjctp/polygon-fetcher/utils"
 )
 
@@ -22,30 +23,26 @@ func updateJsonReports(json_path string, html_path string) middleware.Updater {
 	// Update JSON data or HTML report if it is older than a certain amount of days
 	olderThanDays := 30 * 3
 
-	return func(ticker string, num_terms int, term string) error {
+	return func(ticker string) error {
 		// Validate inputs
 		ticker = strings.ToUpper(ticker)
-		term = string([]rune(term)[0])
-		term = strings.ToUpper(term)
-		if term != "Q" {
-			term = "A"
-		}
 
 		// Fetch data
-		var d fetcher.FinData
-		var err error
+		f, err := fetcher.New()
+		var d tickerData.TickerData
 		t_json_path := filepath.Join(json_path, ticker+".json")
 		update_json := !utils.Exist(t_json_path) ||
 			utils.FileOlderThan(t_json_path, 0, 0, olderThanDays)
 		if update_json {
 			log.Printf("Data does not exist or is outdated for for %s, fetching...\n", ticker)
-			d, err = fetcher.FetchFinData(ticker, num_terms, term, json_path)
+			d, err = f.Fetch(ticker)
 			if err != nil {
 				return err
 			}
+			d.Write(json_path)
 		} else {
 			log.Printf("Data exists for for %s\n", ticker)
-			d, err = fetcher.ReadFile(t_json_path)
+			d, err = tickerData.ReadFile(t_json_path)
 			if err != nil {
 				return err
 			}

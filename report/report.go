@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/fjctp/polygon-fetcher/fetcher"
+	"github.com/fjctp/polygon-fetcher/tickerData"
 )
 
 // HTML template
@@ -33,8 +33,14 @@ const templateStr = `
     </script>
 </html>`
 
+// A report that contains multiple Canvases
+type Report struct {
+	Name     string
+	Canvases []Canvas
+}
+
 // Create a new html report using the finanical data provided
-func New(finData fetcher.FinData, output_dir string) error {
+func New(tData tickerData.TickerData, output_dir string) error {
 	// get a new template
 	t, err := template.New("report").Parse(templateStr)
 	if err != nil {
@@ -43,17 +49,18 @@ func New(finData fetcher.FinData, output_dir string) error {
 
 	// create data structure for the template
 	r := Report{
-		Name: finData.Data[0].CompanyName + " Financial Report",
+		Name: tData.CompanyName + " Financial Report",
 		Canvases: []Canvas{
-			NewBalanceSheetCanvas(finData, "chart1"),
-			NewCashFlowCanvas(finData, "chart2"),
-			NewEpsCanvas(finData, "chart3"),
-			NewIncomeProfitCanvas(finData, "chart4"),
+			NewBalanceSheetCanvas(tData.Financial, "chart1"),
+			NewCashFlowCanvas(tData.Financial, "chart2"),
+			NewEpsCanvas(tData.Financial, "chart3"),
+			NewIncomeProfitCanvas(tData.Financial, "chart4"),
+			NewDividendCanvas(tData.Dividend, "chart5"),
 		},
 	}
 
 	// output the html report with data embedded
-	p := filepath.Join(output_dir, finData.Ticker+".html")
+	p := filepath.Join(output_dir, tData.Ticker+".html")
 	log.Printf("Write report to %s\n", p)
 	f, err := os.Create(p)
 	if err != nil {

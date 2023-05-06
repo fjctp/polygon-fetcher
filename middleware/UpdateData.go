@@ -23,11 +23,7 @@ type UpdateData struct {
 }
 
 // An interface definition for an Updater()
-type Updater func(string, int, string) error
-
-// Constant parameters
-const num_terms = 30 * 4
-const term = "Q" // Q: quarterly, A: annually
+type Updater func(string) error
 
 // ServeHTTP handles the request by passing it to the real
 // handler and generate a html report if it does not exist
@@ -37,7 +33,7 @@ func (l *UpdateData) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		ticker := strings.TrimRight(htmlPage, ".html")
 		if ticker != "" && IsValidTicker(ticker) {
 			log.Printf("Request report for %s\n", ticker)
-			err := l.f(ticker, num_terms, term)
+			err := l.f(ticker)
 			if err != nil {
 				// FIXME: return 404
 				log.Println(err)

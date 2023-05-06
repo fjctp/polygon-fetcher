@@ -2,30 +2,17 @@ package fetcher
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
-	"io/ioutil"
 	"log"
-	"os"
-	"path/filepath"
 	"time"
 
 	"github.com/polygon-io/client-go/rest/models"
 )
 
-type FinData struct {
-	Ticker string                  `json:"ticker"`
-	Data   []models.StockFinancial `json:"data"`
-}
-
 // Fetch finanical data from Polygon using its client and
 // save the data in JSON format
-func FetchFinData(ticker string, count int, timeframe string,
-	output_dir string) (FinData, error) {
-	f, err := NewFetcher()
-	if err != nil {
-		return FinData{}, err
-	}
+func FetchFinData(f Fetcher, ticker string, count int,
+	timeframe string) ([]models.StockFinancial, error) {
 
 	var date time.Time
 	var mulipler int
@@ -49,17 +36,18 @@ func FetchFinData(ticker string, count int, timeframe string,
 		WithTicker(ticker).
 		WithTimeframe(tf).
 		WithPeriodOfReportDate(models.GTE, models.Date(date)).
-		WithLimit(100)
+		WithLimit(100).
+		WithOrder(models.Asc)
 
 	// make request
-	iter := f.VX.ListStockFinancials(context.Background(), params)
+	iter := f.polygon.VX.ListStockFinancials(context.Background(), params)
 
 	// read the next record and keep the data in a slice
 	var data []models.StockFinancial
 	for ind := 0; ind < (count * mulipler); ind++ {
 		if !iter.Next() {
 			if ind == 0 {
-				return FinData{}, errors.New("Invalid ticker")
+				return data, errors.New("Invalid ticker")
 			}
 			// reach the end of the results
 			log.Print("End of record")
@@ -72,45 +60,5 @@ func FetchFinData(ticker string, count int, timeframe string,
 		data = append(data, item)
 	}
 
-	// Save data in JSON format
-	d := FinData{Ticker: ticker, Data: data}
-	err = d.Write(output_dir)
-	if err != nil {
-		return d, err
-	}
-
-	return d, iter.Err()
-}
-
-// Read data from a JSON file and output a populated FinData structure
-func ReadFile(path string) (FinData, error) {
-	content, err := os.ReadFile(path)
-	if err != nil {
-		return FinData{}, err
-	}
-
-	var d FinData
-	err = json.Unmarshal(content, &d)
-	if err != nil {
-		return FinData{}, err
-	}
-	return d, nil
-}
-
-// Write FinData to a JSON file
-func (d FinData) Write(out_dir string) error {
-	// write data to a JSON file named by ticker
-	bytes, err := json.MarshalIndent(d, "", "  ")
-	if err != nil {
-		return err
-	}
-	fname := d.Ticker + ".json"
-	p := filepath.Join(out_dir, fname)
-
-	log.Printf("Write data to %s\n", p)
-	err = ioutil.WriteFile(filepath.Join(out_dir, fname), bytes, 0644)
-	if err != nil {
-		return err
-	}
-	return nil
+	return data, iter.Err()
 }
