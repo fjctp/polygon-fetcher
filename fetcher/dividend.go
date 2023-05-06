@@ -2,7 +2,6 @@ package fetcher
 
 import (
 	"context"
-	"errors"
 	"log"
 	"time"
 
@@ -28,7 +27,7 @@ func FetchDividendData(f Fetcher, ticker string,
 	for ind := 0; ind < count; ind++ {
 		if !iter.Next() {
 			if ind == 0 {
-				return data, errors.New("Invalid ticker")
+				return data, nil
 			}
 			// reach the end of the results
 			log.Print("End of record")
